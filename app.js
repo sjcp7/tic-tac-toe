@@ -178,4 +178,4 @@ const Game = (() => {
 
 })();
 
-
+// Thank you, Lucas Bide (github.com/Lucas-Bide)
