@@ -44,7 +44,6 @@ main {
 }
 
 #modal-form {
-  /*display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
@@ -89,4 +88,9 @@ main {
 
 #player2-board {
   order: 2;
+}
+
+.playing {
+  transform: scale(1.1);
+  border-color: red;
 }

@@ -3,6 +3,8 @@ const Gameboard = (() => {
 
   function getBoard() { return _board }
 
+  function resetBoard() { _board = ['', '', '', '', '', '', '', '', '']; }
+
   function getDLines() {
     return [
       _board[0] + _board[4] + _board[8],   // Top left - bottom right
@@ -30,6 +32,7 @@ const Gameboard = (() => {
 
   return {
     getBoard,
+    resetBoard,
     getDLines,
     getHLines,
     getVLines,
@@ -41,6 +44,7 @@ function Player(name, mark, playing) {
   let _score = 0;
   let _playing = playing;
   function getName() { return name }
+  function setName(newName) { name = newName }
   function getMark() { return mark }
   function getScore() { return _score } 
   function isPlaying() { return _playing }
@@ -53,6 +57,7 @@ function Player(name, mark, playing) {
     getMark,
     getScore,
     resetScore,
+    setName,
     win,
     play,
     isPlaying,
@@ -71,6 +76,22 @@ const DisplayController = (function() {
     const cells = document.querySelectorAll('.cell');
     return cells;
   }
+
+  function getPlayerCards() {
+    const cards = document.querySelectorAll('.player-board');
+    return cards;
+  }
+
+  function getPlayerNames() {
+    const p1 = document.querySelector('#player1').value;
+    const p2 = document.querySelector('#player2').value;
+    return [p1, p2]
+  }
+  
+  function getModal() {
+    const modal = document.querySelector('#modal-form');
+    return modal;
+  }
   
   function render() {
     const board = Gameboard.getBoard();
@@ -81,20 +102,34 @@ const DisplayController = (function() {
       const mark = document.createTextNode(board[index]);
       cell.appendChild(mark);
     })
+
   }
+
+  function getPlayBtn() {
+    const btn = document.querySelector('#submit');
+    return btn;
+  }
+
+  
 
   return {
     getBoard,
     getCells,
+    getPlayerNames,
+    getPlayerCards,
+    getModal,
+    getPlayBtn,
     render
   }
 })();
 
 const Game = (() => {
+  
   const p1 = Player('player1', 'X', true);
   const p2 = Player('player2', 'O', false);
   let winner = 0; // 0 = draw, 1 = p1 win, -1 = p2 win
   let gameOver = false;
+  let playing = false;
 
   function switchActivePlayer() {
     p1.togglePlaying();
@@ -147,16 +182,45 @@ const Game = (() => {
     return res;
   }
 
+  function startGame(e) {
+    playing = true;
+    names = DisplayController.getPlayerNames();
+    p1.setName(names[0]);
+    p2.setName(names[1]);
+    DisplayController.getModal().style.display = 'none';
+  }
+
+  function resetGame() {
+    playing = false;
+    DisplayController.getModal().style.display = 'block';
+    resetScores();
+    Gameboard.resetBoard();
+  }
+
+  function updateScores() {
+    if (winner === 1 ) { p1.win() }
+    if (winner === -1) { p2.win() }
+  }
+
+  function resetScores() {
+    p1.resetScore();
+    p2.resetScore();
+  }
+
   function play(e) {
     const cellIndex = e.target.dataset.cell;
     if (!gameOver){
       if (isCellChecked(cellIndex)) { return }
-
+      const playerCards = DisplayController.getPlayerCards();
       if (p1.isPlaying()) {
+        playerCards[1].classList.add('playing');
+        playerCards[0].classList.remove('playing');
         p1.play(cellIndex);
       } 
       
       else {
+        playerCards[0].classList.add('playing');
+        playerCards[1].classList.remove('playing');
         p2.play(cellIndex);
       }
       switchActivePlayer();
@@ -169,6 +233,8 @@ const Game = (() => {
 
   }
 
+  const playBtn = DisplayController.getPlayBtn();
+  playBtn.addEventListener('click', startGame);
 
   const cells = DisplayController.getCells();
   cells.forEach(cell => {
