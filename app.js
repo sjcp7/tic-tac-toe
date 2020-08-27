@@ -83,9 +83,8 @@ const DisplayController = (function() {
   }
 
   function getPlayerNames() {
-    const p1 = document.querySelector('#player1').value;
-    const p2 = document.querySelector('#player2').value;
-    return [p1, p2]
+    const names = document.querySelector('.player-name');
+    return names;
   }
   
   function getModal() {
