@@ -83,7 +83,7 @@ const DisplayController = (function() {
   }
 
   function getPlayerNames() {
-    const names = document.querySelector('.player-name');
+    const names = document.querySelectorAll('.player-name');
     return names;
   }
   
