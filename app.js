@@ -92,6 +92,11 @@ const DisplayController = (function() {
     const modal = document.querySelector('#modal-form');
     return modal;
   }
+
+  function getPlayerScores() {
+    const scores = document.querySelectorAll('.player-score');
+    return scores;
+  }
   
   function render() {
     const board = Gameboard.getBoard();
@@ -119,6 +124,7 @@ const DisplayController = (function() {
     getPlayerCards,
     getModal,
     getPlayBtn,
+    getPlayerScores,
     render
   }
 })();
@@ -198,8 +204,9 @@ const Game = (() => {
   }
 
   function updateScores() {
-    if (winner === 1 ) { p1.win() }
-    if (winner === -1) { p2.win() }
+    const scores = DisplayController.getPlayerScores();
+    scores[0].innerHTML = p1.getScore();
+    scores[1].innerHTML = p1.getScore();
   }
 
   function resetScores() {
