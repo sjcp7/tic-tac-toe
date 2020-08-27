@@ -10,7 +10,8 @@
       <header>
         <h1>Tic Tac Toe</h1>
       </header>
-      <div id="modal-form">
+
+     <div id="modal-form">
         <form id="form-content" onsubmit="return false">
 
           <label for="player1">Player 1
@@ -27,6 +28,18 @@
       </div>
 
       <main>
+        <div id="player1-board" class="player-board">
+          <span class="player-name">Player 1</span>
+          <span class="player-mark">X</span>
+          <span class="player-score">0</span>
+        </div>
+
+        <div id="player2-board" class="player-board">
+          <span class="player-name">Player 2</span>
+          <span class="player-mark">O</span>
+          <span class="player-score">0</span>
+        </div>
+
         <div id="board">
           <div class="cell" data-cell="0"></div>
           <div class="cell" data-cell="1"></div>
