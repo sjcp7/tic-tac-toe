@@ -1,5 +1,5 @@
 const Gameboard = (() => {
-  const _board = ['', '', '', '', '', '', '', '', ''];
+  let _board = ['', '', '', '', '', '', '', '', ''];
 
   function getBoard() { return _board }
 
@@ -86,6 +86,12 @@ const DisplayController = (function() {
     const names = document.querySelectorAll('.player-name');
     return names;
   }
+
+  function getNameInputs() {
+    const p1 = document.querySelector('#player1').value;
+    const p2 = document.querySelector('#player2').value;
+    return [p1, p2];
+  }
   
   function getModal() {
     const modal = document.querySelector('#modal-form');
@@ -96,8 +102,8 @@ const DisplayController = (function() {
     const scores = document.querySelectorAll('.player-score');
     return scores;
   }
-  
-  function render() {
+
+  function renderBoard() {
     const board = Gameboard.getBoard();
     const cells = getCells();
     cells.forEach(cell => {
@@ -105,7 +111,22 @@ const DisplayController = (function() {
       const index = Number(cell.dataset.cell);
       const mark = document.createTextNode(board[index]);
       cell.appendChild(mark);
-    })
+    });
+  }
+
+  function renderPlayerInfos(p1, p2) {
+    const pNames = getPlayerNames();
+    const p1Name = p1.getName();
+    const p2Name = p2.getName();
+
+    pNames[0].innerHTML = p1Name;
+    pNames[1].innerHTML = p2Name;
+
+  }
+  
+  function render(...players) {
+    renderBoard();
+    renderPlayerInfos(players[0], players[1]);
 
   }
 
@@ -114,7 +135,31 @@ const DisplayController = (function() {
     return btn;
   }
 
-  
+  function getWinBanner() {
+    const banner = document.querySelector('#win-banner span');
+    return banner;
+  }
+
+  function getWinBannerCont() {
+    const container = document.querySelector('#win-banner');
+    return container;
+  }
+
+  function getResetScoreBtn() {
+    const btn = document.querySelector('#reset-score');
+    return btn;
+  }
+
+  function getResetAllBtn() {
+    const btn = document.querySelector('#reset-all');
+    return btn;
+  }
+
+  function getPlayAgainBtn() {
+    const btn = document.querySelector('#play-again');
+    return btn;
+  }
+
 
   return {
     getBoard,
@@ -124,17 +169,23 @@ const DisplayController = (function() {
     getModal,
     getPlayBtn,
     getPlayerScores,
+    getNameInputs,
+    getWinBanner,
+    getResetScoreBtn,
+    getResetAllBtn,
+    getPlayAgainBtn,
+    getWinBannerCont,
     render
   }
 })();
 
 const Game = (() => {
-  
-  const p1 = Player('player1', 'X', true);
-  const p2 = Player('player2', 'O', false);
   let winner = 0; // 0 = draw, 1 = p1 win, -1 = p2 win
   let gameOver = false;
   let playing = false;
+  
+  const p1 = Player('Player1', 'X', true);
+  const p2 = Player('Player2', 'O', false);
 
   function switchActivePlayer() {
     p1.togglePlaying();
@@ -189,28 +240,52 @@ const Game = (() => {
 
   function startGame(e) {
     playing = true;
-    names = DisplayController.getPlayerNames();
+    DisplayController.getModal().style.display = 'none';
+    const names = DisplayController.getNameInputs();
     p1.setName(names[0]);
     p2.setName(names[1]);
-    DisplayController.getModal().style.display = 'none';
+    DisplayController.render(p1, p2);
+    const cont = DisplayController.getWinBannerCont();
+    cont.style.display = 'none';
+
   }
 
-  function resetGame() {
+  function restartGame() {
+    playing = true;
+    gameOver = false;
+    Gameboard.resetBoard();
+    const cont = DisplayController.getWinBannerCont();
+    cont.style.display = 'none';
+    DisplayController.render(p1, p2);
+  }
+
+  function resetGame(e) {
     playing = false;
     DisplayController.getModal().style.display = 'block';
     resetScores();
     Gameboard.resetBoard();
+    const cont = DisplayController.getWinBannerCont();
+    cont.style.display = 'none';
+
   }
 
   function updateScores() {
     const scores = DisplayController.getPlayerScores();
     scores[0].innerHTML = p1.getScore();
-    scores[1].innerHTML = p1.getScore();
+    scores[1].innerHTML = p2.getScore();
   }
 
   function resetScores() {
     p1.resetScore();
     p2.resetScore();
+    updateScores();
+  }
+
+  function showWinMsg() {
+    const banner = DisplayController.getWinBanner();
+    banner.innerHTML = `${winner === 1 ? p1.getName() : p2.getName()} won!`;
+    const bannerCont = DisplayController.getWinBannerCont();
+    bannerCont.style.display = 'flex';
   }
 
   function play(e) {
@@ -231,17 +306,27 @@ const Game = (() => {
       }
       switchActivePlayer();
       isGameOver();
-      DisplayController.render();
+      DisplayController.render(p1, p2);
     } 
     if (gameOver) {
-      alert('Game is over');
+      showWinMsg();
+      updateScores();
     }
 
   }
 
+  const resetAllBtn = DisplayController.getResetAllBtn();
+  resetAllBtn.addEventListener('click', resetGame);
+  
+  const resetScoreBtn = DisplayController.getResetScoreBtn();
+  resetScoreBtn.addEventListener('click', resetScores);
+
   const playBtn = DisplayController.getPlayBtn();
   playBtn.addEventListener('click', startGame);
 
+  const playAgainBtn = DisplayController.getPlayAgainBtn();
+  playAgainBtn.addEventListener('click', restartGame);
+  
   const cells = DisplayController.getCells();
   cells.forEach(cell => {
     cell.addEventListener('click', play);

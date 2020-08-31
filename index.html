@@ -10,8 +10,8 @@
       <header>
         <h1>Tic Tac Toe</h1>
       </header>
-
-     <div id="modal-form">
+          
+    <div id="modal-form">
         <form id="form-content" onsubmit="return false">
 
           <label for="player1">Player 1
@@ -19,23 +19,23 @@
           </label>
 
           <label for="player2">Player 2
-            <input type="text" id="player2" required>
+            <input type="text" id="player2">
           </label>
 
           <button id="submit">Play</button>
         </form>
 
-      </div>
-
+     </div>
+    
       <main>
         <div id="player1-board" class="player-board">
-          <span class="player-name">Player 1</span>
+          <span class="player-name"></span>
           <span class="player-mark">X</span>
           <span class="player-score">0</span>
         </div>
 
         <div id="player2-board" class="player-board">
-          <span class="player-name">Player 2</span>
+          <span class="player-name"></span>
           <span class="player-mark">O</span>
           <span class="player-score">0</span>
         </div>
@@ -52,6 +52,21 @@
           <div class="cell" data-cell="8"></div>
         </div>
       </main>
+
+      <div id="controls">
+        <button id="reset-score">Reset Score</button>
+        <button id="reset-all">Reset All</button>
+      </div>
+
+      <div id="win-banner">
+        <span>You won!</span>
+        <button id="play-again">Play Again</button>
+
+
+      </div>
+
+
+
 
     </div>
     <script src="app.js"></script>
